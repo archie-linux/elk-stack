@@ -1,0 +1,6 @@
+filebeat.inputs:
+- type: log
+  paths:
+    - "/logs/test.log"  # Path inside the container, matches my-app's output
+output.logstash:
+  hosts: ["logstash:5044"]

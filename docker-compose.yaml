@@ -26,6 +26,17 @@ services:
     networks:
       - elk-network
 
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.12.1
+    container_name: filebeat
+    volumes:
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - my-app-logs:/logs    
+    depends_on:
+      - logstash
+    networks:
+      - elk-network
+
   kibana:
     image: docker.elastic.co/kibana/kibana:8.12.1
     container_name: kibana
@@ -38,9 +49,19 @@ services:
     networks:
       - elk-network
 
+  my-app:
+    image: busybox
+    container_name: my-app
+    command: sh -c "while true; do echo 'Hello from my-app' >> /logs/test.log; sleep 1; done"
+    volumes:
+      - my-app-logs:/logs
+    networks:
+      - elk-network
+
 networks:
   elk-network:
     driver: bridge
 
 volumes:
   es-data:
+  my-app-logs:  # Shared volume for logs
